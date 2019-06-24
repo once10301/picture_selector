@@ -8,6 +8,7 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 
+import java.io.File;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -44,9 +45,14 @@ public class PictureSelectorDelegate implements PluginRegistry.ActivityResultLis
 
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            return true;
+        }
         if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
             List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
-            result.success(selectList.get(0).getCompressPath());
+            if (selectList.size() > 0) {
+                result.success(new File(selectList.get(0).getCompressPath()));
+            }
         }
         return false;
     }

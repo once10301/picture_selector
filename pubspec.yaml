@@ -1,8 +1,8 @@
 name: picture_selector
 description: A new Flutter plugin.
-version: 0.0.1
-author:
-homepage: 
+version: 0.0.2
+author: Lewis <once10301@gmail.com>
+homepage: https://github.com/once10301/picture_selector
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
