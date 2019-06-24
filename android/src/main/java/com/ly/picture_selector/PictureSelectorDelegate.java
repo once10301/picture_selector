@@ -51,7 +51,7 @@ public class PictureSelectorDelegate implements PluginRegistry.ActivityResultLis
         if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
             List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
             if (selectList.size() > 0) {
-                result.success(new File(selectList.get(0).getCompressPath()));
+                result.success(selectList.get(0).getCompressPath());
             }
         }
         return false;
