@@ -1,14 +1,16 @@
 package com.ly.picture_selector;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.widget.ImageView;
 
-import com.luck.picture.lib.PictureSelector;
-import com.luck.picture.lib.config.PictureConfig;
-import com.luck.picture.lib.config.PictureMimeType;
-import com.luck.picture.lib.entity.LocalMedia;
+import com.bumptech.glide.Glide;
+import com.yuyh.library.imgsel.ISNav;
+import com.yuyh.library.imgsel.common.ImageLoader;
+import com.yuyh.library.imgsel.config.ISListConfig;
 
-import java.io.File;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -18,6 +20,8 @@ import io.flutter.plugin.common.PluginRegistry;
 import static android.app.Activity.RESULT_OK;
 
 public class PictureSelectorDelegate implements PluginRegistry.ActivityResultListener {
+    private static final int REQUEST_LIST_CODE = 0;
+
     private Activity activity;
 
     private MethodCall methodCall;
@@ -30,28 +34,31 @@ public class PictureSelectorDelegate implements PluginRegistry.ActivityResultLis
 
     public void select(MethodChannel.Result result) {
         this.result = result;
-        PictureSelector.create(activity)
-                .openGallery(PictureMimeType.ofImage())//全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
-                .selectionMode(PictureConfig.SINGLE)// 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
-                .isCamera(true)// 是否显示拍照按钮 true or false
-                .enableCrop(false)// 是否裁剪 true or false
-                .compress(true)// 是否压缩 true or false
-                .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
-                .circleDimmedLayer(true)// 是否圆形裁剪 true or false
-                .showCropFrame(false)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
-                .showCropGrid(false)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
-                .forResult(PictureConfig.CHOOSE_REQUEST);
+        ISNav.getInstance().init(new ImageLoader() {
+            @Override
+            public void displayImage(Context context, String path, ImageView imageView) {
+                Glide.with(context).load(path).into(imageView);
+            }
+        });
+        ISListConfig config = new ISListConfig.Builder()
+                .multiSelect(false)
+                .statusBarColor(Color.parseColor("#AE252F"))
+                .title("相册")
+                .titleColor(Color.WHITE)
+                .titleBgColor(Color.parseColor("#AE252F"))
+                .needCrop(true)
+                .cropSize(1, 1, 200, 200)
+                .needCamera(true)
+                .build();
+        ISNav.getInstance().toListActivity(activity, config, REQUEST_LIST_CODE);
     }
 
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return true;
-        }
-        if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
-            List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
-            if (selectList.size() > 0) {
-                result.success(selectList.get(0).getCompressPath());
+        if (requestCode == REQUEST_LIST_CODE && resultCode == RESULT_OK && data != null) {
+            List<String> pathList = data.getStringArrayListExtra("result");
+            if (pathList.size() > 0) {
+                result.success(pathList.get(0));
             }
         }
         return false;
