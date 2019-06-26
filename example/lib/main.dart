@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:picture_selector/picture_selector.dart';
 
 void main() => runApp(MyApp());

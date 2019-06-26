@@ -41,5 +41,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Your prompt</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Your prompt</string>
 </dict>
 </plist>
