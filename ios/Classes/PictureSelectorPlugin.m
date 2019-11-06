@@ -1,5 +1,7 @@
 #import "PictureSelectorPlugin.h"
 #import <TZImagePickerController.h>
+#define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
+#define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
 
 @implementation PictureSelectorPlugin
 
@@ -34,14 +36,17 @@ UIViewController *_viewController;
         imagePickerVc.allowPickingGif = false;
         imagePickerVc.allowPickingMultipleVideo = false;
         imagePickerVc.allowCrop = true;
-        imagePickerVc.needCircleCrop = true;
+        imagePickerVc.scaleAspectFillCrop = true;
+        NSInteger top = (SCREEN_HEIGHT - SCREEN_WIDTH) / 2;
+        imagePickerVc.cropRect = CGRectMake(0, top, SCREEN_WIDTH, SCREEN_WIDTH);
         [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL flag) {
             UIImage *image = photos[0];
-            NSString *path = [self getImagePath:image];
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+            UIImage *newImage = [UIImage imageWithData:imageData];
+            NSString *path = [self getImagePath:newImage];
             result(path);
         }];
         [_viewController presentViewController:imagePickerVc animated:YES completion:nil];
-        
     } else {
         result(FlutterMethodNotImplemented);
     }

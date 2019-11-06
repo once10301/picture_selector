@@ -1,0 +1,29 @@
+PODS:
+  - Flutter (1.0.0)
+  - picture_selector (0.0.1):
+    - Flutter
+    - TZImagePickerController
+  - TZImagePickerController (3.2.6)
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - picture_selector (from `.symlinks/plugins/picture_selector/ios`)
+
+SPEC REPOS:
+  trunk:
+    - TZImagePickerController
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  picture_selector:
+    :path: ".symlinks/plugins/picture_selector/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  picture_selector: 20981947a2e327f601b94b0f0b66451d95394453
+  TZImagePickerController: 3900e8d68428ff3a88817efce82ae9e7d9ffebc9
+
+PODFILE CHECKSUM: e8988baac3a50f787b9d3ed7ca44957b442f92a7
+
+COCOAPODS: 1.8.4

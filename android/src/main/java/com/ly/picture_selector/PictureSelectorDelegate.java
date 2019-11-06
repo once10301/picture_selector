@@ -42,10 +42,10 @@ public class PictureSelectorDelegate implements PluginRegistry.ActivityResultLis
         });
         ISListConfig config = new ISListConfig.Builder()
                 .multiSelect(false)
-                .statusBarColor(Color.parseColor("#AE252F"))
+                .statusBarColor(Color.parseColor("#FF9500"))
                 .title("相册")
                 .titleColor(Color.WHITE)
-                .titleBgColor(Color.parseColor("#AE252F"))
+                .titleBgColor(Color.parseColor("#FF9500"))
                 .needCrop(true)
                 .cropSize(1, 1, 200, 200)
                 .needCamera(true)
