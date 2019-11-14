@@ -41,15 +41,23 @@ UIViewController *_viewController;
         imagePickerVc.cropRect = CGRectMake(0, top, SCREEN_WIDTH, SCREEN_WIDTH);
         [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL flag) {
             UIImage *image = photos[0];
-            NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
-            UIImage *newImage = [UIImage imageWithData:imageData];
-            NSString *path = [self getImagePath:newImage];
+            image = [self imageWithImage:image scaledToSize:CGSizeMake(200, 200)];
+            NSString *path = [self getImagePath:image];
             result(path);
         }];
         [_viewController presentViewController:imagePickerVc animated:YES completion:nil];
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+//压缩图片
+- (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize{
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 -(NSString *)getImagePath:(UIImage *)Image {
