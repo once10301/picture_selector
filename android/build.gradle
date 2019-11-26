@@ -1,5 +1,5 @@
 group 'com.ly.picture_selector'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 buildscript {
     repositories {
@@ -26,8 +26,8 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 16
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion 17
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -35,6 +35,6 @@ android {
 }
 
 dependencies {
-    api 'com.yuyh.imgsel:library:2.0.6'
+    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.3.2'
     api 'com.github.bumptech.glide:glide:4.9.0'
 }

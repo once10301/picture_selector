@@ -7,28 +7,28 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class PictureSelectorPlugin implements MethodCallHandler {
-    private Registrar registrar;
-    private PictureSelectorDelegate delegate;
 
-    private PictureSelectorPlugin(Registrar registrar, PictureSelectorDelegate delegate) {
-        this.registrar = registrar;
-        this.delegate = delegate;
-    }
+  private PictureSelectorDelegate delegate;
 
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "picture_selector");
-        final PictureSelectorDelegate delegate = new PictureSelectorDelegate(registrar.activity());
-        registrar.addActivityResultListener(delegate);
-        channel.setMethodCallHandler(new PictureSelectorPlugin(registrar, delegate));
-    }
+  private PictureSelectorPlugin(  PictureSelectorDelegate delegate) {
 
-    @Override
-    public void onMethodCall(MethodCall call, Result result) {
-        if (call.method.equals("select")) {
-            delegate.select(result);
-        } else {
-            result.notImplemented();
-        }
+    this.delegate = delegate;
+  }
+
+  public static void registerWith(Registrar registrar) {
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "picture_selector");
+    final PictureSelectorDelegate delegate = new PictureSelectorDelegate(registrar.activity());
+    registrar.addActivityResultListener(delegate);
+    channel.setMethodCallHandler(new PictureSelectorPlugin(delegate));
+  }
+
+  @Override
+  public void onMethodCall(MethodCall call, Result result) {
+    if (call.method.equals("select")) {
+      delegate.select(call, result);
+    } else {
+      result.notImplemented();
     }
+  }
 
 }

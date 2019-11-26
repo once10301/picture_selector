@@ -28,22 +28,37 @@ UIViewController *_viewController;
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"select" isEqualToString:call.method]) {
+        NSDictionary *argsMap = call.arguments;
+        NSInteger type = [argsMap[@"type"] integerValue];
+        NSInteger max = [argsMap[@"max"] integerValue];
+        BOOL isCamera = [argsMap[@"isCamera"] boolValue];
+        BOOL enableCrop = [argsMap[@"enableCrop"] boolValue];
+        BOOL compress = [argsMap[@"compress"] boolValue];
+        NSInteger ratioX = [argsMap[@"ratioX"] integerValue];
+        NSInteger ratioY = [argsMap[@"ratioY"] integerValue];
         TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
-        imagePickerVc.allowTakePicture = true;
-        imagePickerVc.allowPickingVideo = false;
-        imagePickerVc.allowPickingImage = true;
+        imagePickerVc.allowPickingVideo = type != 1;
+        imagePickerVc.allowPickingImage = type != 2;
+        imagePickerVc.maxImagesCount = max;
         imagePickerVc.allowPickingOriginalPhoto = false;
+        imagePickerVc.allowTakePicture = isCamera;
         imagePickerVc.allowPickingGif = false;
-        imagePickerVc.allowPickingMultipleVideo = false;
-        imagePickerVc.allowCrop = true;
+        imagePickerVc.allowPickingMultipleVideo = max != 1;
+        imagePickerVc.allowCrop = enableCrop;
         imagePickerVc.scaleAspectFillCrop = true;
-        NSInteger top = (SCREEN_HEIGHT - SCREEN_WIDTH) / 2;
+        NSInteger top = (SCREEN_HEIGHT - SCREEN_WIDTH * ratioY / ratioX) / 2;
         imagePickerVc.cropRect = CGRectMake(0, top, SCREEN_WIDTH, SCREEN_WIDTH);
         [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL flag) {
-            UIImage *image = photos[0];
-            image = [self imageWithImage:image scaledToSize:CGSizeMake(200, 200)];
-            NSString *path = [self getImagePath:image];
-            result(path);
+            NSMutableArray *pathArray = @[].mutableCopy;
+            [photos enumerateObjectsUsingBlock:^(UIImage * _Nonnull subImage, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSData *imageData = UIImageJPEGRepresentation(subImage, 0.5);
+                UIImage *newImage = [UIImage imageWithData:imageData];
+                NSString *path = [self getImagePath:newImage];
+                NSMutableDictionary *dic = @{}.mutableCopy;
+                dic[@"path"] = path;
+                [pathArray addObject:dic];
+            }];
+            result(pathArray);
         }];
         [_viewController presentViewController:imagePickerVc animated:YES completion:nil];
     } else {
