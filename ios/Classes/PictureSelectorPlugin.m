@@ -3,9 +3,15 @@
 #define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
 #define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
 
-@implementation PictureSelectorPlugin
+@interface PictureSelectorPlugin ()
 
-UIViewController *_viewController;
+@property (strong, nonatomic) UIViewController *viewController;
+
+@property (strong, nonatomic) NSArray *assets;
+
+@end
+
+@implementation PictureSelectorPlugin
 
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -46,16 +52,22 @@ UIViewController *_viewController;
         imagePickerVc.allowPickingMultipleVideo = max != 1;
         imagePickerVc.allowCrop = enableCrop;
         imagePickerVc.scaleAspectFillCrop = true;
+        imagePickerVc.selectedAssets = self.assets.mutableCopy;
         NSInteger top = (SCREEN_HEIGHT - SCREEN_WIDTH * ratioY / ratioX) / 2;
         imagePickerVc.cropRect = CGRectMake(0, top, SCREEN_WIDTH, SCREEN_WIDTH);
         [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL flag) {
+            self->_assets = [NSArray arrayWithArray:assets];
             NSMutableArray *pathArray = @[].mutableCopy;
             [photos enumerateObjectsUsingBlock:^(UIImage * _Nonnull subImage, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSData *imageData = UIImageJPEGRepresentation(subImage, 0.5);
                 UIImage *newImage = [UIImage imageWithData:imageData];
-                NSString *path = [self getImagePath:newImage];
+                NSString *path = [self getImagePath:newImage withCompress:compress];
                 NSMutableDictionary *dic = @{}.mutableCopy;
-                dic[@"path"] = path;
+                if(compress){
+                    dic[@"compressPath"] = path;
+                } else {
+                    dic[@"path"] = path;
+                }
                 [pathArray addObject:dic];
             }];
             result(pathArray);
@@ -66,26 +78,21 @@ UIViewController *_viewController;
     }
 }
 
-//压缩图片
-- (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize{
-    UIGraphicsBeginImageContext(newSize);
-    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
-    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
-}
-
--(NSString *)getImagePath:(UIImage *)Image {
+-(NSString *)getImagePath:(UIImage *)Image withCompress:(BOOL)compress {
     NSString * filePath = nil;
     NSData * data = nil;
     if (UIImagePNGRepresentation(Image) == nil) {
-        data = UIImageJPEGRepresentation(Image, 0.5);
+        if(compress){
+            data = UIImageJPEGRepresentation(Image, 0.2);
+        } else {
+            data = UIImageJPEGRepresentation(Image, 0.5);
+        }
     } else {
         data = UIImagePNGRepresentation(Image);
     }
     //图片保存的路径
     //这里将图片放在沙盒的documents文件夹中
-    NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
     //文件管理器
     NSFileManager *fileManager = [NSFileManager defaultManager];
     //把刚刚图片转换的data对象拷贝至沙盒中

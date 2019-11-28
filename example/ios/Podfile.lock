@@ -6,7 +6,7 @@ PODS:
   - TZImagePickerController (3.2.6)
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `.symlinks/flutter/ios`)
   - picture_selector (from `.symlinks/plugins/picture_selector/ios`)
 
 SPEC REPOS:
@@ -15,7 +15,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: ".symlinks/flutter/ios"
   picture_selector:
     :path: ".symlinks/plugins/picture_selector/ios"
 
